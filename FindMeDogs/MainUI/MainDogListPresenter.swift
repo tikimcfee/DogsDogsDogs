@@ -11,6 +11,7 @@ import Foundation
 protocol DogListView: class {
 	var presenter: DogListPresenter? { get set }
 	func displayDogNames(names: [String])
+	func displayDogsWithImages(dogData: DogBreedResolvedImages)
 }
 
 protocol DogListPresenter {
@@ -23,6 +24,9 @@ class MainDogListPresenter: DogListPresenter {
 	private let dogDataManager: DogDataManager
 	private let asyncDispatch = DispatchQueue.init(label: "DogListPresenter", qos: .userInteractive)
 	private let mainDispatch = DispatchQueue.main
+	
+	// Save the initial list to return when search is empty
+	private var currentKnownDogs: DogBreedsList? = nil
 	
 	// Keep the reference weak to avoid a retain cycle
 	private weak var dogListView: DogListView?
@@ -52,9 +56,28 @@ class MainDogListPresenter: DogListPresenter {
 	
 	func userInputChanged(to: String) {
 		asyncDispatch.async { [weak self] in
+			
+			// Don't bother fetching when the suggestions are empty; we don't show images,
+			// and we don't want to kick off a fetch of everything.
+			guard to.count > 0 else {
+				let knownDogs = self?.dogDataManager.allKnownDogNames ?? []
+				self?.mainDispatch.async {
+					self?.dogListView?.displayDogNames(names: knownDogs)
+				}
+				return
+			}
+			
 			self?.dogDataManager.dogSuggestionsForInput(userInput: to) { dogList in
+				
+				// First display the names, then begin fetching images
 				self?.mainDispatch.async {
 					self?.dogListView?.displayDogNames(names: dogList)
+				}
+				
+				self?.dogDataManager.dogImagesForSuggestions(dogList) { resolvedImages in
+					self?.mainDispatch.async {
+						self?.dogListView?.displayDogsWithImages(dogData: resolvedImages)
+					}
 				}
 			}
 		}

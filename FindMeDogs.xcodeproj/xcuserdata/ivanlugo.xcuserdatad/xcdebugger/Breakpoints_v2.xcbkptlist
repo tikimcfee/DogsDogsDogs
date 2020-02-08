@@ -7,96 +7,16 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "5ACF6DD6-6188-4F93-B2F9-F5BA171B76D7"
+            uuid = "3F9CB221-84DE-4980-A38A-CE5C21AE53AD"
             shouldBeEnabled = "Yes"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "FindMeDogs/DogImagesAPI/Networking.swift"
+            filePath = "FindMeDogs/DogImagesInteractions/DogDataManager.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "39"
-            endingLineNumber = "39"
-            landmarkName = "fetchDogList(with:)"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "B7C5E6D1-6788-452C-87B0-5A230365BBB0"
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "FindMeDogs/DogImagesAPI/Networking.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "49"
-            endingLineNumber = "49"
-            landmarkName = "fetchDogImages(for:with:)"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "FA2B07E4-87CE-4DAB-8050-1EC0EDCE767C"
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "FindMeDogs/MainUI/MainDogListPresenter.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "45"
-            endingLineNumber = "45"
-            landmarkName = "viewLoaded()"
-            landmarkType = "7">
-            <Locations>
-               <Location
-                  uuid = "FA2B07E4-87CE-4DAB-8050-1EC0EDCE767C - 67ecbbd3951124b6"
-                  shouldBeEnabled = "No"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "closure #1 () -&gt; () in FindMeDogs.MainDogListPresenter.viewLoaded() -&gt; ()"
-                  moduleName = "FindMeDogs"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/ivanlugo/XcodeProjects/ZeeMee/FindMeDogs/FindMeDogs/FindMeDogs/MainUI/MainDogListPresenter.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "45"
-                  endingLineNumber = "45"
-                  offsetFromSymbolStart = "53">
-               </Location>
-               <Location
-                  uuid = "FA2B07E4-87CE-4DAB-8050-1EC0EDCE767C - 15c27218faf154a8"
-                  shouldBeEnabled = "No"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "closure #1 (FindMeDogs.DogBreedsList) -&gt; () in closure #1 () -&gt; () in FindMeDogs.MainDogListPresenter.viewLoaded() -&gt; ()"
-                  moduleName = "FindMeDogs"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/ivanlugo/XcodeProjects/ZeeMee/FindMeDogs/FindMeDogs/FindMeDogs/MainUI/MainDogListPresenter.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "44"
-                  endingLineNumber = "44"
-                  offsetFromSymbolStart = "226">
-               </Location>
-            </Locations>
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "E0E9240E-1A9F-4DE7-8230-53DFD0CC80AA"
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "FindMeDogs/DogImagesAPI/Networking.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "31"
-            endingLineNumber = "31"
-            landmarkName = "fetch(_:_:)"
+            startingLineNumber = "61"
+            endingLineNumber = "61"
+            landmarkName = "dogImagesForSuggestions(_:_:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>

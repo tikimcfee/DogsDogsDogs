@@ -35,4 +35,16 @@ struct DogBreedImages: Codable, Constructible {
 		self.message = []
 		self.status = .unknown
 	}
+	
+	var imageUrls: [URL] {
+		return message.compactMap { 
+			URL.init(string: $0) 
+		}
+	}
+}
+
+typealias DogBreedImageTuple = (breedName: String, breedImage: URL)
+
+class DogBreedResolvedImages {
+	var resolvedImages: [DogBreedImageTuple] = []
 }

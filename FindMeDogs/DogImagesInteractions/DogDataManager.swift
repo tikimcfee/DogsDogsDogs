@@ -7,28 +7,30 @@
 //
 
 import Foundation
+import Kingfisher
 
 typealias InitialFetchCallback = (DogBreedsList) -> Void
 typealias DogSearchCallback = ([String]) -> Void
+typealias DogSearchImageCallback = (DogBreedResolvedImages) -> Void
 
-enum OperationKey: Hashable, Equatable {
-	case searchBreedList
-}
 
 class DogDataManager {
 	
 	// You'd usually want to inject a protocol here to make this more easily testable
 	private var dogsApi: DogsApi = DogsApi() 
 	
-	// Start the list as empty; fetch on start()
-	private var allKnownDogs: DogBreedsList = DogBreedsList()
-	
 	// Do everything in cancellable operations! Hooray!
 	private let dataOperator = DogDataManagerOperations()
 	
+	// Start the list as empty; fetch on start()
+	var allKnownDogs: DogBreedsList = DogBreedsList()
+	var allKnownDogNames: [String] {
+		return allKnownDogs.message
+	}
+	
 	func fetchInitialDogBreedList(_ callback: @escaping InitialFetchCallback) {
 		dogsApi.fetchDogList { [weak self] breedList in
-			self?.allKnownDogs = breedList
+			self?.allKnownDogs = breedList			
 			callback(breedList)
 		}
 	}
@@ -48,52 +50,20 @@ class DogDataManager {
 		dataOperator.addOperation(.searchBreedList, searcher)
 	}
 	
-}
-
-class DogDataManagerOperations {
-	
-	lazy var operationsInProgress: [OperationKey : Operation] = [:]
-	lazy var operationQueue: OperationQueue = {
-		var queue = OperationQueue()
-		queue.qualityOfService = .userInteractive
-		queue.name = "Dog Data Manager Queue"
-		queue.maxConcurrentOperationCount = 1
-		return queue
-	}()
-	
-	func cancelExistingOperation(_ key: OperationKey) {
-		let maybeOp = operationsInProgress.removeValue(forKey: key)
-		maybeOp?.cancel()
-	}
-	
-	func addOperation(_ key: OperationKey, _ op: Operation) {
-		operationsInProgress[key] = op
-		operationQueue.addOperation(op)
-	}
-}
-
-class DogBreedSearcher: Operation {
-	
-	private let dogBreedsList: DogBreedsList
-	private let searchString: String
-	var didComplete: Bool = false
-	var result: [String] = []
-	
-	init(_ list: DogBreedsList, _ search: String) {
-		self.dogBreedsList = list
-		self.searchString = search.lowercased()
-	}
-	
-	override func main() {
-		if isCancelled { return }
+	func dogImagesForSuggestions(
+		_ dogNames: [String],
+		_ callback: @escaping DogSearchImageCallback
+	) {
+		dataOperator.cancelExistingOperation(.getImages)
 		
-		for dogName in dogBreedsList.message {
-			if isCancelled { return }
-			
-			if dogName.starts(with: searchString) {
-				result.append(dogName)
-			}
+		let images = DogImagesFetcher(dogNames, dogsApi)
+		images.completionBlock = {
+			if images.isCancelled { return }
+			callback(images.resolvedDogImages)
 		}
+		
+		dataOperator.addOperation(.searchBreedList, images)
 	}
 	
 }
+
