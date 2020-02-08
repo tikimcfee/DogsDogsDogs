@@ -50,6 +50,16 @@ class MainDogListViewController: UIViewController {
 		return textField
 	}()
 	
+	lazy var suggestedBreedsLabel: UILabel = {
+		let suggestedNames = UILabel()
+		suggestedNames.translatesAutoresizingMaskIntoConstraints = false
+		suggestedNames.preservesSuperviewLayoutMargins = true
+		suggestedNames.numberOfLines = 0
+		suggestedNames.lineBreakMode = .byWordWrapping
+		suggestedNames.textColor = UIColor.gray
+		return suggestedNames
+	}()
+	
 	func makeSeparator() -> UIView {
 		let separator = UIView()
 		separator.translatesAutoresizingMaskIntoConstraints = false
@@ -64,8 +74,9 @@ class MainDogListViewController: UIViewController {
 		let topSeparator = makeSeparator()
 		let bottomSeparator = makeSeparator()
 		
-		view.addSubview(inputField)
 		view.addSubview(topSeparator)
+		view.addSubview(inputField)
+		view.addSubview(suggestedBreedsLabel)
 		view.addSubview(bottomSeparator)
 		view.addSubview(tableView)
 		
@@ -80,16 +91,21 @@ class MainDogListViewController: UIViewController {
 			inputField.topAnchor.constraint(equalTo: topSeparator.bottomAnchor, constant: insets.top),
 			inputField.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: insets.left),
 			inputField.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -insets.right),
-			inputField.bottomAnchor.constraint(equalTo: bottomSeparator.topAnchor, constant: -insets.bottom),
+			inputField.bottomAnchor.constraint(equalTo: suggestedBreedsLabel.topAnchor, constant: -insets.bottom),
+			
+			suggestedBreedsLabel.topAnchor.constraint(equalTo: inputField.bottomAnchor, constant: insets.top),
+			suggestedBreedsLabel.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: insets.left),
+			suggestedBreedsLabel.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -insets.right),
+			suggestedBreedsLabel.bottomAnchor.constraint(equalTo: bottomSeparator.topAnchor, constant: -insets.bottom),
 			
 			bottomSeparator.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
 			bottomSeparator.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor),
 			bottomSeparator.heightAnchor.constraint(equalToConstant: 1.0),
 			
 			tableView.topAnchor.constraint(equalTo: bottomSeparator.bottomAnchor, constant: insets.top),
-			tableView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
 			tableView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
 			tableView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor),
+			tableView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
 		])
 	}
 	
@@ -107,6 +123,10 @@ extension MainDogListViewController: DogListView {
 		self.tableView.reloadData()
 	}
 	
+	func displaySuggestedNames(dogBreeds: String) {
+		suggestedBreedsLabel.text = dogBreeds
+		suggestedBreedsLabel.isHidden = dogBreeds.count == 0
+	}
 }
 
 // MARK: UITableViewDataSource Implementation

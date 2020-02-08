@@ -11,6 +11,7 @@ import Foundation
 protocol DogListView: class {
 	var presenter: DogListPresenter? { get set }
 	func displayDogsWithImages(dogData: DogBreedResolvedImages)
+	func displaySuggestedNames(dogBreeds: String)
 }
 
 protocol DogListPresenter {
@@ -45,6 +46,7 @@ class MainDogListPresenter: DogListPresenter {
 			self?.dogDataManager.fetchInitialDogBreedList { initialList in
 				self?.mainDispatch.async {
 					self?.dogListView?.displayDogsWithImages(dogData: initialList)
+					self?.dogListView?.displaySuggestedNames(dogBreeds: "")
 				}
 			}
 		}
@@ -56,6 +58,7 @@ class MainDogListPresenter: DogListPresenter {
 		// and we don't want to kick off a fetch of everything.
 		guard to.count > 0 else {
 			mainDispatch.async {
+				self.dogListView?.displaySuggestedNames(dogBreeds: "")
 				self.dogListView?.displayDogsWithImages(dogData: self.dogDataManager.allKnownDogs)
 			}
 			return
@@ -65,7 +68,19 @@ class MainDogListPresenter: DogListPresenter {
 			self?.dogDataManager.dogSuggestionsForInput(userInput: to) { dogList in
 				
 				// First display the names, then begin fetching images
+				// This section is a little ugly as well; we're rebuilding a string each time we have
+				// a new suggestion, which could be done by the manager itself. If we had
+				// true cached responses, this would be less worrisome.
+				
+				let allBreedNames: String
+				if dogList.breedNameToUrlTuples.count == 1 {
+					allBreedNames = ""
+				} else {
+					allBreedNames = dogList.breedNameToUrlTuples.map { $0.breedName }.joined(separator: ", ")
+				}
+				
 				self?.mainDispatch.async {
+					self?.dogListView?.displaySuggestedNames(dogBreeds: allBreedNames)
 					self?.dogListView?.displayDogsWithImages(dogData: dogList)
 				}
 				
