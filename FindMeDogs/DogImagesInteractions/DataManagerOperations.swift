@@ -51,32 +51,43 @@ class DogImagesFetcher: Operation {
 	override func main() {
 		if isCancelled { return }
 		
+		// Create a dispatch group to await while we fetch all 
+		// the image urls for each target breed
 		let dispatchGroup = DispatchGroup()
 		
 		for dogName in targetBreeds {
 			if isCancelled { return }
 			
+			// Each dog name results in a fetch and mapping; enter group external to the fetch
 			dispatchGroup.enter()
 			
 			fetcher.fetchDogImages(for: dogName) { dogBreedImages in
-				if self.isCancelled { return }
 				
-				let allBreedImages = dogBreedImages.imageUrls
+				if self.isCancelled {
+					dispatchGroup.leave()
+					return 
+					
+				}
 				
-				for breedImage in allBreedImages {
-					if self.isCancelled { return }
+				// Essentially a flatMap, but allows for cancellation
+				for breedImage in dogBreedImages.imageUrls {
+					if self.isCancelled {
+						dispatchGroup.leave()
+						return 
+					}
 					
 					self.resolvedDogImages.resolvedImages.append(
 						(dogName, breedImage)
 					)
 				}
 				
+				// Leave the group *after* the fetch has completed and mapped URLs
 				dispatchGroup.leave()
 			}
 		}
 		
+		// Wait for 'dispatched' groups to complete
 		dispatchGroup.wait()
-		
 	}
 }
 
