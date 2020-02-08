@@ -8,20 +8,17 @@
 
 import UIKit
 
-enum TableCells: String {
-	case mainDogListCell = "MainDogListCell"
-	case dogWithImageCell = "DogWithImageCell"
-}
-
 enum TableMode {
 	case mainDogList, dogsWithImages
 }
 
 class MainDogListViewController: UIViewController {
 	
-	// MARK: DogListView
-	var currentMode: TableMode = .mainDogList
+	// DogListView requirement
 	var presenter: DogListPresenter? = nil
+	
+	// View holds a reference to last instance to separate data from current presenter / manager state
+	var currentMode: TableMode = .mainDogList
 	var currentResolvedImages = DogBreedResolvedImages()
 	
 	override func viewDidLoad() {
@@ -38,8 +35,8 @@ class MainDogListViewController: UIViewController {
 		tableView.delegate = self
 		tableView.dataSource = self
 		
-		tableView.register(MainDogListTableViewCell.self, forCellReuseIdentifier: TableCells.mainDogListCell.rawValue)
-		tableView.register(MainDogWithImageTableViewCell.self, forCellReuseIdentifier: TableCells.dogWithImageCell.rawValue)
+		tableView.register(MainDogListTableViewCell.self, forCellReuseIdentifier: MainDogListTableViewCell.ReuseIdentifier)
+		tableView.register(MainDogWithImageTableViewCell.self, forCellReuseIdentifier: MainDogWithImageTableViewCell.ReuseIdentifier)
 		
 		return tableView
 	}()
@@ -90,6 +87,7 @@ extension MainDogListViewController: DogListView {
 
 // MARK: UITableViewDataSource Implementation
 extension MainDogListViewController: UITableViewDataSource {
+	
 	func tableView(_ tableView: UITableView, didEndDisplaying cell: UITableViewCell, forRowAt indexPath: IndexPath) {
 		if let imageCell = cell as? MainDogWithImageTableViewCell {
 			imageCell.dogImage.kf.cancelDownloadTask()
@@ -110,13 +108,21 @@ extension MainDogListViewController: UITableViewDataSource {
 	}
 	
 	private func cellForSuggestionMode(at indexPath: IndexPath) -> UITableViewCell {
-		let cell = (tableView.dequeueReusableCell(withIdentifier: TableCells.mainDogListCell.rawValue) ?? MainDogListTableViewCell()) as! MainDogListTableViewCell
+		let cell = (
+			tableView.dequeueReusableCell(withIdentifier: MainDogListTableViewCell.ReuseIdentifier) 
+			?? MainDogListTableViewCell()
+		) as! MainDogListTableViewCell
+		
 		cell.configure(currentResolvedImages.breedNameToUrlTuples[indexPath.row].breedName)
 		return cell
 	}
 	
 	private func cellForImageMode(at indexPath: IndexPath) -> UITableViewCell {
-		let cell = (tableView.dequeueReusableCell(withIdentifier: TableCells.dogWithImageCell.rawValue) ?? MainDogWithImageTableViewCell()) as! MainDogWithImageTableViewCell
+		let cell = (
+			tableView.dequeueReusableCell(withIdentifier:  MainDogWithImageTableViewCell.ReuseIdentifier)
+			?? MainDogWithImageTableViewCell()
+		) as! MainDogWithImageTableViewCell
+		
 		cell.configure(resolvedBreed: currentResolvedImages.breedNameToUrlTuples[indexPath.row])
 		return cell
 	}

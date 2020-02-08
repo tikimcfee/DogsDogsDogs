@@ -9,8 +9,9 @@
 import Foundation
 import UIKit
 
-
 class MainDogListTableViewCell: UITableViewCell {
+	
+	static let ReuseIdentifier = "MainDogListCell" 
 	
 	private let dogNameLabel: UILabel = {
 		let label = UILabel()
@@ -42,6 +43,8 @@ class MainDogListTableViewCell: UITableViewCell {
 }
 
 class MainDogWithImageTableViewCell: UITableViewCell {
+	
+	static let ReuseIdentifier = "DogWithImageCell"
 	
 	private let dogNameLabel: UILabel = {
 		let label = UILabel()

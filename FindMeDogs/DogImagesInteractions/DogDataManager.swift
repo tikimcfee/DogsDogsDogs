@@ -49,6 +49,8 @@ class DogDataManager {
 		_ dogNames: DogBreedResolvedImages,
 		_ callback: @escaping DogSearchCallback
 	) {
+		// It would be a nice win to create an in memory cache for the requested dogs and their URLs;
+		// Although this work is all done in the background, it is exceptionally repetitive and long running
 		dataOperator.cancelExistingOperation(.getImages)
 		
 		let images = DogImagesFetcher(dogNames, dogsApi)
