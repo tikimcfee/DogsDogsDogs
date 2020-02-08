@@ -15,6 +15,7 @@ protocol DogListView: class {
 
 protocol DogListPresenter {
 	func viewLoaded()
+	func userInputChanged(to: String)
 }
 
 class MainDogListPresenter: DogListPresenter {
@@ -40,20 +41,23 @@ class MainDogListPresenter: DogListPresenter {
 	}
 	
 	func viewLoaded() {
-		print("View loaded...")
 		asyncDispatch.async { [weak self] in
 			self?.dogDataManager.fetchInitialDogBreedList { initialList in
-				print("Fetched dog list \(initialList)")
 				self?.mainDispatch.async {
-					print("Dispatching to view")
 					self?.dogListView?.displayDogNames(names: initialList.message)
 				}
 			}
 		}
 	}
 	
-	func onUserEnteredText(_ input: String) {
-		
+	func userInputChanged(to: String) {
+		asyncDispatch.async { [weak self] in
+			self?.dogDataManager.dogSuggestionsForInput(userInput: to) { dogList in
+				self?.mainDispatch.async {
+					self?.dogListView?.displayDogNames(names: dogList)
+				}
+			}
+		}
 	}
 	
 	deinit {

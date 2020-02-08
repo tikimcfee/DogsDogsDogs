@@ -12,16 +12,16 @@ enum TableCells: String {
 	case mainDogListCell = "MainDogListCell"
 }
 
-class MainDogListViewController: UIViewController, DogListView {
+class MainDogListViewController: UIViewController {
 	
 	// MARK: DogListView
 	var currentDogNames: [String] = []
-	
 	var presenter: DogListPresenter?
 	
-	func displayDogNames(names: [String]) {
-		self.currentDogNames = names
-		self.tableView.reloadData()
+	override func viewDidLoad() {
+		super.viewDidLoad()	
+		configure()
+		presenter?.viewLoaded()
 	}
 	
 	// MARK: VC Views and setup
@@ -36,21 +36,47 @@ class MainDogListViewController: UIViewController, DogListView {
 		
 		return tableView
 	}()
-
-	override func viewDidLoad() {
-		super.viewDidLoad()	
+	
+	lazy var inputField: UITextField = {
+		let textField = UITextField()
+		textField.text = "Enter some dogs here"
+		textField.translatesAutoresizingMaskIntoConstraints = false
+		textField.preservesSuperviewLayoutMargins = true
+		textField.addTarget(self, action: #selector(userTextDidChange), for: UIControl.Event.editingChanged)
+		return textField
+	}()
+	
+	private func configure() {
+		view.backgroundColor = UIColor.white
 		
 		// Add and constrain tableview
+		view.addSubview(inputField)
 		view.addSubview(tableView)
+		
 		NSLayoutConstraint.activate([
-			tableView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+			inputField.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+			inputField.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
+			inputField.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor),
+			inputField.bottomAnchor.constraint(equalTo: tableView.topAnchor),
+			
 			tableView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
 			tableView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
 			tableView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor),
 		])
-		
-		presenter?.viewLoaded()
 	}
+	
+	@objc private func userTextDidChange() {
+		presenter?.userInputChanged(to: inputField.text ?? "")
+	}
+}
+
+extension MainDogListViewController: DogListView {
+	
+	func displayDogNames(names: [String]) {
+		self.currentDogNames = names
+		self.tableView.reloadData()
+	}
+	
 }
 
 extension MainDogListViewController: UITableViewDelegate {
@@ -63,8 +89,7 @@ extension MainDogListViewController: UITableViewDataSource {
 	}
 	
 	func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-		var cell = (tableView.dequeueReusableCell(withIdentifier: TableCells.mainDogListCell.rawValue)
-				?? MainDogListTableViewCell()) as! MainDogListTableViewCell
+		let cell = (tableView.dequeueReusableCell(withIdentifier: TableCells.mainDogListCell.rawValue) ?? MainDogListTableViewCell()) as! MainDogListTableViewCell
 		
 		cell.configure(currentDogNames[indexPath.row])
 		

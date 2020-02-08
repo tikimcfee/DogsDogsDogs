@@ -81,7 +81,7 @@ class DogBreedSearcher: Operation {
 	
 	init(_ list: DogBreedsList, _ search: String) {
 		self.dogBreedsList = list
-		self.searchString = search
+		self.searchString = search.lowercased()
 	}
 	
 	override func main() {
