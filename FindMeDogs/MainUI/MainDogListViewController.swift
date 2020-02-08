@@ -50,19 +50,43 @@ class MainDogListViewController: UIViewController {
 		return textField
 	}()
 	
+	func makeSeparator() -> UIView {
+		let separator = UIView()
+		separator.translatesAutoresizingMaskIntoConstraints = false
+		separator.backgroundColor = UIColor.gray
+		return separator
+	}
+	
 	private func configure() {
 		// Really simple configurations
 		view.backgroundColor = UIColor.white
 		
+		let topSeparator = makeSeparator()
+		let bottomSeparator = makeSeparator()
+		
 		view.addSubview(inputField)
+		view.addSubview(topSeparator)
+		view.addSubview(bottomSeparator)
 		view.addSubview(tableView)
 		
+		let insets = UIEdgeInsets(top: 16, left: 8, bottom: 16, right: 8)
+		
 		NSLayoutConstraint.activate([
-			inputField.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
-			inputField.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
-			inputField.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor),
-			inputField.bottomAnchor.constraint(equalTo: tableView.topAnchor),
+			topSeparator.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: insets.top),
+			topSeparator.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
+			topSeparator.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor),
+			topSeparator.heightAnchor.constraint(equalToConstant: 1.0),
 			
+			inputField.topAnchor.constraint(equalTo: topSeparator.bottomAnchor, constant: insets.top),
+			inputField.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: insets.left),
+			inputField.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: insets.right),
+			inputField.bottomAnchor.constraint(equalTo: bottomSeparator.topAnchor, constant: -insets.bottom),
+			
+			bottomSeparator.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
+			bottomSeparator.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor),
+			bottomSeparator.heightAnchor.constraint(equalToConstant: 1.0),
+			
+			tableView.topAnchor.constraint(equalTo: bottomSeparator.bottomAnchor, constant: insets.top),
 			tableView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
 			tableView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
 			tableView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor),
