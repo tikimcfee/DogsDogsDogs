@@ -11,8 +11,10 @@ Things that are here:
 Things that are a bit crusty:
 - The DataManager and associated Operations are a bit kludgy, and could use a cleaner abstraction layer. (The DispatchGroup is kinda icky, for example)
 - There isn't much of an architecture here; the abstractions are somewhat standalone, as implementing an entirely DI'd, MVVM'd, Tweakable solution is deemed far out of scope
+- API Error handling is covered up with default, empty models. Makes the code easier to implement, but of course hides actual errors.
 
 Things that are missing:
 - Any test more complicated than 'does the instantiation hierarchy work?'
 - Data mocking, UITests
+- UI Error states
 
