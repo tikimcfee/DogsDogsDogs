@@ -39,7 +39,7 @@ class MainDogListViewController: UIViewController {
 	
 	lazy var inputField: UITextField = {
 		let textField = UITextField()
-		textField.text = "Enter some dogs here"
+		textField.placeholder = "Type a dog breed here"
 		textField.translatesAutoresizingMaskIntoConstraints = false
 		textField.preservesSuperviewLayoutMargins = true
 		textField.addTarget(self, action: #selector(userTextDidChange), for: UIControl.Event.editingChanged)
@@ -80,7 +80,9 @@ extension MainDogListViewController: DogListView {
 }
 
 extension MainDogListViewController: UITableViewDelegate {
-	
+	func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+		tableView.deselectRow(at: indexPath, animated: false)
+	}
 }
 
 extension MainDogListViewController: UITableViewDataSource {

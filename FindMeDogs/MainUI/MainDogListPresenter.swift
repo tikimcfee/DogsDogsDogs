@@ -60,8 +60,4 @@ class MainDogListPresenter: DogListPresenter {
 		}
 	}
 	
-	deinit {
-		print("Did deinit presenter")
-	}
-	
 }
