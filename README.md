@@ -1,4 +1,4 @@
-h1. Gimme the dogs
+## Gimme the dogs
 
 Simple implementation of the Dog API for finding and displaying images.
 
@@ -14,5 +14,5 @@ Things that are a bit crusty:
 
 Things that are missing:
 - Any test more complicated than 'does the instantiation hierarchy work?'
-- UITests
+- Data mocking, UITests
 
