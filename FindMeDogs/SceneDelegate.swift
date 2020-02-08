@@ -29,6 +29,12 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 		let window = UIWindow(windowScene: windowScene)
 		window.rootViewController = configureInitialViewController()
 		window.makeKeyAndVisible()
+		
+		// Sorry - no dark mode support! ;)
+		if #available(iOS 13, *) {
+			window.overrideUserInterfaceStyle = .light
+		}
+		
 		self.window = window		
 	}
 

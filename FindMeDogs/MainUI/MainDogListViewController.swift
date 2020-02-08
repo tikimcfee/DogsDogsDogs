@@ -43,6 +43,7 @@ class MainDogListViewController: UIViewController {
 	
 	lazy var inputField: UITextField = {
 		let textField = UITextField()
+		textField.autocorrectionType = .no
 		textField.placeholder = "Type a dog breed here"
 		textField.translatesAutoresizingMaskIntoConstraints = false
 		textField.preservesSuperviewLayoutMargins = true
