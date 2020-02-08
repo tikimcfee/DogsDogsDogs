@@ -118,9 +118,9 @@ class MainDogListViewController: UIViewController {
 extension MainDogListViewController: DogListView {
 	
 	func displayDogsWithImages(dogData: DogBreedResolvedImages) {
-		self.currentMode = dogData.includesResolvedURLs ? .dogsWithImages : .mainDogList
-		self.currentResolvedImages = dogData
-		self.tableView.reloadData()
+		currentMode = dogData.includesResolvedURLs ? .dogsWithImages : .mainDogList
+		currentResolvedImages = dogData
+		tableView.reloadData()
 	}
 	
 	func displaySuggestedNames(dogBreeds: String) {
@@ -174,12 +174,18 @@ extension MainDogListViewController: UITableViewDataSource {
 
 // MARK: UITableViewDelegate Implementation
 extension MainDogListViewController: UITableViewDelegate {
+	
+	// If a user taps a breed name, automatically enter it into search
 	func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
 		tableView.deselectRow(at: indexPath, animated: false)
+		
+		let selectedName = currentResolvedImages.breedNameToUrlTuples[indexPath.row].breedName
+		inputField.text = selectedName
+		presenter?.userInputChanged(to: selectedName) 
 	}
 	
 	// Dismiss keyboard when scrolling around
 	func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
-		self.inputField.endEditing(true)
+		inputField.endEditing(true)
 	}
 }
