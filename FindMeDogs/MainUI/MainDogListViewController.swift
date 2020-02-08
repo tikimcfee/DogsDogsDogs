@@ -92,7 +92,6 @@ class MainDogListViewController: UIViewController {
 			inputField.topAnchor.constraint(equalTo: topSeparator.bottomAnchor, constant: 4),
 			inputField.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: insets.left),
 			inputField.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -insets.right),
-			inputField.bottomAnchor.constraint(equalTo: suggestedBreedsLabel.topAnchor, constant: -4),
 			
 			suggestedBreedsLabel.topAnchor.constraint(equalTo: inputField.bottomAnchor, constant: 4),
 			suggestedBreedsLabel.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: insets.left),

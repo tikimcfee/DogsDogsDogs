@@ -59,7 +59,7 @@ class DogDataManager {
 			callback(images.resolvedDogImages)
 		}
 		
-		dataOperator.addOperation(.searchBreedList, images)
+		dataOperator.addOperation(.getImages, images)
 	}
 	
 }
