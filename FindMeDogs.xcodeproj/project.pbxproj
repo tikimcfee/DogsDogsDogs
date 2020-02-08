@@ -22,6 +22,7 @@
 		4546329023EF237000936CB0 /* MainDogListPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4546328F23EF237000936CB0 /* MainDogListPresenter.swift */; };
 		4546329323EF3C2400936CB0 /* Kingfisher in Frameworks */ = {isa = PBXBuildFile; productRef = 4546329223EF3C2400936CB0 /* Kingfisher */; };
 		4546329623EF3CAB00936CB0 /* DataManagerOperations.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4546329523EF3CAB00936CB0 /* DataManagerOperations.swift */; };
+		4546329923EF5ADE00936CB0 /* MainDogListTableViewCells.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4546329823EF5ADE00936CB0 /* MainDogListTableViewCells.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -62,6 +63,7 @@
 		4546328B23EF168400936CB0 /* Endpoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Endpoint.swift; sourceTree = "<group>"; };
 		4546328F23EF237000936CB0 /* MainDogListPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainDogListPresenter.swift; sourceTree = "<group>"; };
 		4546329523EF3CAB00936CB0 /* DataManagerOperations.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataManagerOperations.swift; sourceTree = "<group>"; };
+		4546329823EF5ADE00936CB0 /* MainDogListTableViewCells.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainDogListTableViewCells.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -168,6 +170,7 @@
 			children = (
 				4546325623EEFDEB00936CB0 /* MainDogListViewController.swift */,
 				4546328F23EF237000936CB0 /* MainDogListPresenter.swift */,
+				4546329823EF5ADE00936CB0 /* MainDogListTableViewCells.swift */,
 			);
 			path = MainUI;
 			sourceTree = "<group>";
@@ -314,6 +317,7 @@
 				4546328623EF027700936CB0 /* Models.swift in Sources */,
 				4546328423EF000300936CB0 /* Networking.swift in Sources */,
 				4546329023EF237000936CB0 /* MainDogListPresenter.swift in Sources */,
+				4546329923EF5ADE00936CB0 /* MainDogListTableViewCells.swift in Sources */,
 				4546325523EEFDEB00936CB0 /* SceneDelegate.swift in Sources */,
 				4546329623EF3CAB00936CB0 /* DataManagerOperations.swift in Sources */,
 				4546328823EF163100936CB0 /* ModelCoding.swift in Sources */,

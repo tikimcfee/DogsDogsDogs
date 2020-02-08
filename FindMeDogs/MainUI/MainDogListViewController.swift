@@ -22,14 +22,6 @@ class MainDogListViewController: UIViewController {
 	// MARK: DogListView
 	var currentMode: TableMode = .mainDogList
 	var presenter: DogListPresenter? = nil
-	
-	// !!! Warning !!!
-	// This is somewhat of an indicator of a weak backing model for this; ideally, a single model
-	// with optional data would be passed through a view model, and the view would 'switch' between
-	// one cell type and another. We jump this hurdle with a 'view mode' that switches between which cells
-	// to instantiate / dequeue / configure
-	// ---------------
-	var currentDogNames: [String] = []
 	var currentResolvedImages = DogBreedResolvedImages()
 	
 	override func viewDidLoad() {
@@ -62,9 +54,9 @@ class MainDogListViewController: UIViewController {
 	}()
 	
 	private func configure() {
+		// Really simple configurations
 		view.backgroundColor = UIColor.white
 		
-		// Add and constrain tableview
 		view.addSubview(inputField)
 		view.addSubview(tableView)
 		
@@ -85,28 +77,18 @@ class MainDogListViewController: UIViewController {
 	}
 }
 
+// MARK: View protocol implementation
 extension MainDogListViewController: DogListView {
 	
-	func displayDogNames(names: [String]) {
-		self.currentMode = .mainDogList
-		self.currentDogNames = names
-		self.tableView.reloadData()
-	}
-	
 	func displayDogsWithImages(dogData: DogBreedResolvedImages) {
-		self.currentMode = .dogsWithImages
+		self.currentMode = dogData.includesResolvedURLs ? .dogsWithImages : .mainDogList
 		self.currentResolvedImages = dogData
 		self.tableView.reloadData()
 	}
 	
 }
 
-extension MainDogListViewController: UITableViewDelegate {
-	func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-		tableView.deselectRow(at: indexPath, animated: false)
-	}
-}
-
+// MARK: UITableViewDataSource Implementation
 extension MainDogListViewController: UITableViewDataSource {
 	func tableView(_ tableView: UITableView, didEndDisplaying cell: UITableViewCell, forRowAt indexPath: IndexPath) {
 		if let imageCell = cell as? MainDogWithImageTableViewCell {
@@ -115,12 +97,7 @@ extension MainDogListViewController: UITableViewDataSource {
 	}
 	
 	func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-		switch currentMode {
-			case .dogsWithImages:
-				return currentResolvedImages.resolvedImages.count
-			default:
-				return currentDogNames.count
-		}
+		return currentResolvedImages.breedNameToUrlTuples.count
 	}
 	
 	func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -134,91 +111,25 @@ extension MainDogListViewController: UITableViewDataSource {
 	
 	private func cellForSuggestionMode(at indexPath: IndexPath) -> UITableViewCell {
 		let cell = (tableView.dequeueReusableCell(withIdentifier: TableCells.mainDogListCell.rawValue) ?? MainDogListTableViewCell()) as! MainDogListTableViewCell
-		
-		cell.configure(currentDogNames[indexPath.row])
-		
+		cell.configure(currentResolvedImages.breedNameToUrlTuples[indexPath.row].breedName)
 		return cell
 	}
 	
 	private func cellForImageMode(at indexPath: IndexPath) -> UITableViewCell {
 		let cell = (tableView.dequeueReusableCell(withIdentifier: TableCells.dogWithImageCell.rawValue) ?? MainDogWithImageTableViewCell()) as! MainDogWithImageTableViewCell
-		
-		cell.configure(resolvedBreed: currentResolvedImages.resolvedImages[indexPath.row])
-		
+		cell.configure(resolvedBreed: currentResolvedImages.breedNameToUrlTuples[indexPath.row])
 		return cell
 	}
 }
 
-class MainDogWithImageTableViewCell: UITableViewCell {
-	
-	private let dogNameLabel: UILabel = {
-		let label = UILabel()
-		label.translatesAutoresizingMaskIntoConstraints = false
-		return label
-	}()
-	
-	let dogImage: UIImageView = {
-		let imageView = UIImageView()
-		imageView.translatesAutoresizingMaskIntoConstraints = false
-		imageView.contentMode = .scaleAspectFit
-		return imageView
-	}()
-	
-	required init?(coder: NSCoder) {
-		fatalError("init(coder:) has not been implemented")
+// MARK: UITableViewDelegate Implementation
+extension MainDogListViewController: UITableViewDelegate {
+	func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+		tableView.deselectRow(at: indexPath, animated: false)
 	}
 	
-	override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
-		super.init(style: style, reuseIdentifier: reuseIdentifier)
-		
-		contentView.addSubview(dogNameLabel)
-		contentView.addSubview(dogImage)
-		
-		NSLayoutConstraint.activate([
-			dogNameLabel.topAnchor.constraint(equalTo: contentView.layoutMarginsGuide.topAnchor),
-			dogNameLabel.leadingAnchor.constraint(equalTo: contentView.layoutMarginsGuide.leadingAnchor),
-			
-			dogImage.topAnchor.constraint(equalTo: dogNameLabel.bottomAnchor),
-			dogImage.leadingAnchor.constraint(equalTo: contentView.layoutMarginsGuide.leadingAnchor),
-			dogImage.trailingAnchor.constraint(equalTo: contentView.layoutMarginsGuide.trailingAnchor),
-			dogImage.bottomAnchor.constraint(equalTo: contentView.layoutMarginsGuide.bottomAnchor),
-			dogImage.heightAnchor.constraint(greaterThanOrEqualToConstant: 80.0),
-		])
-	}
-	
-	func configure(resolvedBreed: DogBreedImageTuple) {
-		dogNameLabel.text = resolvedBreed.breedName
-		dogImage.kf.setImage(with: resolvedBreed.breedImage)
-	}
-}
-
-class MainDogListTableViewCell: UITableViewCell {
-	
-	private let dogNameLabel: UILabel = {
-		let label = UILabel()
-		label.translatesAutoresizingMaskIntoConstraints = false
-		return label
-	}()
-	
-	// No nibs, no coders - just manual instantiation
-	required init?(coder: NSCoder) {
-		fatalError("init(coder:) has not been implemented")
-	}
-	
-	override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
-		super.init(style: style, reuseIdentifier: reuseIdentifier)
-		
-		contentView.addSubview(dogNameLabel)
-		
-		NSLayoutConstraint.activate([
-			dogNameLabel.topAnchor.constraint(equalTo: contentView.layoutMarginsGuide.topAnchor),
-			dogNameLabel.leadingAnchor.constraint(equalTo: contentView.layoutMarginsGuide.leadingAnchor),
-			dogNameLabel.bottomAnchor.constraint(equalTo: contentView.layoutMarginsGuide.bottomAnchor),
-			dogNameLabel.trailingAnchor.constraint(equalTo: contentView.layoutMarginsGuide.trailingAnchor),
-		])
-	}
-	
-	func configure(_ dogName: String) {
-		dogNameLabel.text = dogName
+	// Dismiss keyboard when scrolling around
+	func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
+		self.inputField.endEditing(true)
 	}
 }

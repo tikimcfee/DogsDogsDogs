@@ -9,10 +9,7 @@
 import Foundation
 import Kingfisher
 
-typealias InitialFetchCallback = (DogBreedsList) -> Void
-typealias DogSearchCallback = ([String]) -> Void
-typealias DogSearchImageCallback = (DogBreedResolvedImages) -> Void
-
+typealias DogSearchCallback = (DogBreedResolvedImages) -> Void
 
 class DogDataManager {
 	
@@ -23,15 +20,13 @@ class DogDataManager {
 	private let dataOperator = DogDataManagerOperations()
 	
 	// Start the list as empty; fetch on start()
-	var allKnownDogs: DogBreedsList = DogBreedsList()
-	var allKnownDogNames: [String] {
-		return allKnownDogs.message
-	}
+	var allKnownDogs: DogBreedResolvedImages = DogBreedResolvedImages()
 	
-	func fetchInitialDogBreedList(_ callback: @escaping InitialFetchCallback) {
+	func fetchInitialDogBreedList(_ callback: @escaping DogSearchCallback) {
 		dogsApi.fetchDogList { [weak self] breedList in
-			self?.allKnownDogs = breedList			
-			callback(breedList)
+			let mappedImages = breedList.asResolvedImages
+			self?.allKnownDogs = mappedImages			
+			callback(mappedImages)
 		}
 	}
 	
@@ -51,8 +46,8 @@ class DogDataManager {
 	}
 	
 	func dogImagesForSuggestions(
-		_ dogNames: [String],
-		_ callback: @escaping DogSearchImageCallback
+		_ dogNames: DogBreedResolvedImages,
+		_ callback: @escaping DogSearchCallback
 	) {
 		dataOperator.cancelExistingOperation(.getImages)
 		

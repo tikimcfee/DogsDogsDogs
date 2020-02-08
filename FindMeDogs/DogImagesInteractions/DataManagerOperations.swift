@@ -36,12 +36,12 @@ class DogDataManagerOperations {
 
 class DogImagesFetcher: Operation {
 	
-	private let targetBreeds: [String]
+	private let targetBreeds: DogBreedResolvedImages
 	private let fetcher: DogsApi
 	var resolvedDogImages = DogBreedResolvedImages()
 	
 	init(
-		_ targets: [String],
+		_ targets: DogBreedResolvedImages,
 		_ fetcher: DogsApi
 	) {
 		self.targetBreeds = targets
@@ -55,11 +55,12 @@ class DogImagesFetcher: Operation {
 		// the image urls for each target breed
 		let dispatchGroup = DispatchGroup()
 		
-		for dogName in targetBreeds {
+		for dogImageMapping in targetBreeds.breedNameToUrlTuples {
 			if isCancelled { return }
 			
 			// Each dog name results in a fetch and mapping; enter group external to the fetch
 			dispatchGroup.enter()
+			let dogName = dogImageMapping.breedName
 			
 			fetcher.fetchDogImages(for: dogName) { dogBreedImages in
 				
@@ -76,7 +77,7 @@ class DogImagesFetcher: Operation {
 						return 
 					}
 					
-					self.resolvedDogImages.resolvedImages.append(
+					self.resolvedDogImages.breedNameToUrlTuples.append(
 						(dogName, breedImage)
 					)
 				}
@@ -86,6 +87,9 @@ class DogImagesFetcher: Operation {
 			}
 		}
 		
+		// Images have been fetched
+		resolvedDogImages.includesResolvedURLs = true
+		
 		// Wait for 'dispatched' groups to complete
 		dispatchGroup.wait()
 	}
@@ -93,12 +97,12 @@ class DogImagesFetcher: Operation {
 
 class DogBreedSearcher: Operation {
 	
-	private let dogBreedsList: DogBreedsList
+	private let dogBreedsList: DogBreedResolvedImages
 	private let searchString: String
 	var didComplete: Bool = false
-	var result: [String] = []
+	var result: DogBreedResolvedImages = DogBreedResolvedImages()
 	
-	init(_ list: DogBreedsList, _ search: String) {
+	init(_ list: DogBreedResolvedImages, _ search: String) {
 		self.dogBreedsList = list
 		self.searchString = search.lowercased()
 	}
@@ -106,13 +110,16 @@ class DogBreedSearcher: Operation {
 	override func main() {
 		if isCancelled { return }
 		
-		for dogName in dogBreedsList.message {
+		var breedNames: [String] = []
+		for dogMapping in dogBreedsList.breedNameToUrlTuples {
 			if isCancelled { return }
 			
-			if dogName.starts(with: searchString) {
-				result.append(dogName)
+			if dogMapping.breedName.starts(with: searchString) {
+				breedNames.append(dogMapping.breedName)
 			}
 		}
+		
+		result = breedNames.asResolvedImages
 	}
 	
 }
