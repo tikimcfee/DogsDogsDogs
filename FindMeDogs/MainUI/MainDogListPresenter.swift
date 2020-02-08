@@ -73,10 +73,12 @@ class MainDogListPresenter: DogListPresenter {
 				// true cached responses, this would be less worrisome.
 				
 				let allBreedNames: String
-				if dogList.breedNameToUrlTuples.count == 1 {
-					allBreedNames = ""
+				if dogList.breedNameToUrlTuples.count == 0 {
+					allBreedNames = "No breeds found matching '\(to)'"
+				} else if dogList.breedNameToUrlTuples.count == 1 {
+					allBreedNames = "Found '\(dogList.breedNameToUrlTuples.first!.breedName)'"
 				} else {
-					allBreedNames = dogList.breedNameToUrlTuples.map { $0.breedName }.joined(separator: ", ")
+					allBreedNames = "Suggested breeds: " + dogList.breedNameToUrlTuples.map { $0.breedName }.joined(separator: ", ")
 				}
 				
 				self?.mainDispatch.async {

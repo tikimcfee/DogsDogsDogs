@@ -88,15 +88,15 @@ class MainDogListViewController: UIViewController {
 			topSeparator.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor),
 			topSeparator.heightAnchor.constraint(equalToConstant: 1.0),
 			
-			inputField.topAnchor.constraint(equalTo: topSeparator.bottomAnchor, constant: insets.top),
+			inputField.topAnchor.constraint(equalTo: topSeparator.bottomAnchor, constant: 4),
 			inputField.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: insets.left),
 			inputField.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -insets.right),
-			inputField.bottomAnchor.constraint(equalTo: suggestedBreedsLabel.topAnchor, constant: -insets.bottom),
+			inputField.bottomAnchor.constraint(equalTo: suggestedBreedsLabel.topAnchor, constant: -4),
 			
-			suggestedBreedsLabel.topAnchor.constraint(equalTo: inputField.bottomAnchor, constant: insets.top),
+			suggestedBreedsLabel.topAnchor.constraint(equalTo: inputField.bottomAnchor, constant: 4),
 			suggestedBreedsLabel.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: insets.left),
 			suggestedBreedsLabel.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -insets.right),
-			suggestedBreedsLabel.bottomAnchor.constraint(equalTo: bottomSeparator.topAnchor, constant: -insets.bottom),
+			suggestedBreedsLabel.bottomAnchor.constraint(equalTo: bottomSeparator.topAnchor, constant: -4),
 			
 			bottomSeparator.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
 			bottomSeparator.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor),
