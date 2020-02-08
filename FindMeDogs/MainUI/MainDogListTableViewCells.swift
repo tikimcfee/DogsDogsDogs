@@ -77,7 +77,7 @@ class MainDogWithImageTableViewCell: UITableViewCell {
 			dogImage.leadingAnchor.constraint(equalTo: contentView.layoutMarginsGuide.leadingAnchor),
 			dogImage.trailingAnchor.constraint(equalTo: contentView.layoutMarginsGuide.trailingAnchor),
 			dogImage.bottomAnchor.constraint(equalTo: contentView.layoutMarginsGuide.bottomAnchor),
-			dogImage.heightAnchor.constraint(greaterThanOrEqualToConstant: 80.0),
+			dogImage.heightAnchor.constraint(equalToConstant: 200.0),
 		])
 	}
 	

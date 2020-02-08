@@ -58,7 +58,7 @@ class MainDogListViewController: UIViewController {
 	}
 	
 	private func configure() {
-		// Really simple configurations
+		// Really simple configurations; nevermind UIStackView - Good ol' constraints!
 		view.backgroundColor = UIColor.white
 		
 		let topSeparator = makeSeparator()
@@ -79,7 +79,7 @@ class MainDogListViewController: UIViewController {
 			
 			inputField.topAnchor.constraint(equalTo: topSeparator.bottomAnchor, constant: insets.top),
 			inputField.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: insets.left),
-			inputField.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: insets.right),
+			inputField.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -insets.right),
 			inputField.bottomAnchor.constraint(equalTo: bottomSeparator.topAnchor, constant: -insets.bottom),
 			
 			bottomSeparator.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
