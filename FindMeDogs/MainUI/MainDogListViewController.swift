@@ -8,20 +8,23 @@
 
 import UIKit
 
-enum TableCells: String {
-	case mainDogListCell = "MainDogListCell"
+enum TableMode {
+	case mainDogList, dogsWithImages
 }
 
-class MainDogListViewController: UIViewController, DogListView {
+class MainDogListViewController: UIViewController {
 	
-	// MARK: DogListView
-	var currentDogNames: [String] = []
+	// DogListView requirement
+	var presenter: DogListPresenter? = nil
 	
-	var presenter: DogListPresenter?
+	// View holds a reference to last instance to separate data from current presenter / manager state
+	var currentMode: TableMode = .mainDogList
+	var currentResolvedImages = DogBreedResolvedImages()
 	
-	func displayDogNames(names: [String]) {
-		self.currentDogNames = names
-		self.tableView.reloadData()
+	override func viewDidLoad() {
+		super.viewDidLoad()	
+		configure()
+		presenter?.viewLoaded()
 	}
 	
 	// MARK: VC Views and setup
@@ -32,77 +35,157 @@ class MainDogListViewController: UIViewController, DogListView {
 		tableView.delegate = self
 		tableView.dataSource = self
 		
-		tableView.register(MainDogListTableViewCell.self, forCellReuseIdentifier: TableCells.mainDogListCell.rawValue)
+		tableView.register(MainDogListTableViewCell.self, forCellReuseIdentifier: MainDogListTableViewCell.ReuseIdentifier)
+		tableView.register(MainDogWithImageTableViewCell.self, forCellReuseIdentifier: MainDogWithImageTableViewCell.ReuseIdentifier)
 		
 		return tableView
 	}()
-
-	override func viewDidLoad() {
-		super.viewDidLoad()	
+	
+	lazy var inputField: UITextField = {
+		let textField = UITextField()
+		textField.autocorrectionType = .no
+		textField.placeholder = "Type a dog breed here"
+		textField.translatesAutoresizingMaskIntoConstraints = false
+		textField.preservesSuperviewLayoutMargins = true
+		textField.addTarget(self, action: #selector(userTextDidChange), for: UIControl.Event.editingChanged)
+		return textField
+	}()
+	
+	lazy var suggestedBreedsLabel: UILabel = {
+		let suggestedNames = UILabel()
+		suggestedNames.translatesAutoresizingMaskIntoConstraints = false
+		suggestedNames.preservesSuperviewLayoutMargins = true
+		suggestedNames.numberOfLines = 0
+		suggestedNames.lineBreakMode = .byWordWrapping
+		suggestedNames.textColor = UIColor.gray
+		return suggestedNames
+	}()
+	
+	func makeSeparator() -> UIView {
+		let separator = UIView()
+		separator.translatesAutoresizingMaskIntoConstraints = false
+		separator.backgroundColor = UIColor.gray
+		return separator
+	}
+	
+	private func configure() {
+		// Really simple configurations; nevermind UIStackView - Good ol' constraints!
+		view.backgroundColor = UIColor.white
 		
-		// Add and constrain tableview
+		let topSeparator = makeSeparator()
+		let bottomSeparator = makeSeparator()
+		
+		view.addSubview(topSeparator)
+		view.addSubview(inputField)
+		view.addSubview(suggestedBreedsLabel)
+		view.addSubview(bottomSeparator)
 		view.addSubview(tableView)
+		
+		let insets = UIEdgeInsets(top: 16, left: 8, bottom: 16, right: 8)
+		
 		NSLayoutConstraint.activate([
-			tableView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
-			tableView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
+			topSeparator.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: insets.top),
+			topSeparator.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
+			topSeparator.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor),
+			topSeparator.heightAnchor.constraint(equalToConstant: 1.0),
+			
+			inputField.topAnchor.constraint(equalTo: topSeparator.bottomAnchor, constant: 4),
+			inputField.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: insets.left),
+			inputField.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -insets.right),
+			
+			suggestedBreedsLabel.topAnchor.constraint(equalTo: inputField.bottomAnchor, constant: 4),
+			suggestedBreedsLabel.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: insets.left),
+			suggestedBreedsLabel.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -insets.right),
+			suggestedBreedsLabel.bottomAnchor.constraint(equalTo: bottomSeparator.topAnchor, constant: -4),
+			
+			bottomSeparator.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
+			bottomSeparator.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor),
+			bottomSeparator.heightAnchor.constraint(equalToConstant: 1.0),
+			
+			tableView.topAnchor.constraint(equalTo: bottomSeparator.bottomAnchor, constant: insets.top),
 			tableView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
 			tableView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor),
+			tableView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
 		])
-		
-		presenter?.viewLoaded()
+	}
+	
+	@objc private func userTextDidChange() {
+		presenter?.userInputChanged(to: inputField.text ?? "")
 	}
 }
 
-extension MainDogListViewController: UITableViewDelegate {
+// MARK: View protocol implementation
+extension MainDogListViewController: DogListView {
 	
+	func displayDogsWithImages(dogData: DogBreedResolvedImages) {
+		currentMode = dogData.includesResolvedURLs ? .dogsWithImages : .mainDogList
+		currentResolvedImages = dogData
+		tableView.reloadData()
+	}
+	
+	func displaySuggestedNames(dogBreeds: String) {
+		suggestedBreedsLabel.text = dogBreeds
+		suggestedBreedsLabel.isHidden = dogBreeds.count == 0
+	}
 }
 
+// MARK: UITableViewDataSource Implementation
 extension MainDogListViewController: UITableViewDataSource {
+	
+	func tableView(_ tableView: UITableView, didEndDisplaying cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+		if let imageCell = cell as? MainDogWithImageTableViewCell {
+			imageCell.dogImage.kf.cancelDownloadTask()
+		}
+	}
+	
 	func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-		return currentDogNames.count
+		return currentResolvedImages.breedNameToUrlTuples.count
 	}
 	
 	func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-		var cell = (tableView.dequeueReusableCell(withIdentifier: TableCells.mainDogListCell.rawValue)
-				?? MainDogListTableViewCell()) as! MainDogListTableViewCell
+		switch (currentMode) {
+			case .dogsWithImages:
+				return cellForImageMode(at: indexPath)
+			case .mainDogList:
+				return cellForSuggestionMode(at: indexPath)
+		}
+	}
+	
+	private func cellForSuggestionMode(at indexPath: IndexPath) -> UITableViewCell {
+		let cell = (
+			tableView.dequeueReusableCell(withIdentifier: MainDogListTableViewCell.ReuseIdentifier) 
+			?? MainDogListTableViewCell()
+		) as! MainDogListTableViewCell
 		
-		cell.configure(currentDogNames[indexPath.row])
+		cell.configure(currentResolvedImages.breedNameToUrlTuples[indexPath.row].breedName)
+		return cell
+	}
+	
+	private func cellForImageMode(at indexPath: IndexPath) -> UITableViewCell {
+		let cell = (
+			tableView.dequeueReusableCell(withIdentifier:  MainDogWithImageTableViewCell.ReuseIdentifier)
+			?? MainDogWithImageTableViewCell()
+		) as! MainDogWithImageTableViewCell
 		
+		cell.configure(resolvedBreed: currentResolvedImages.breedNameToUrlTuples[indexPath.row])
 		return cell
 	}
 }
 
-class MainDogListTableViewCell: UITableViewCell {
+// MARK: UITableViewDelegate Implementation
+extension MainDogListViewController: UITableViewDelegate {
 	
-	private let dogNameLabel: UILabel = {
-		let label = UILabel()
-		label.translatesAutoresizingMaskIntoConstraints = false
-		return label
-	}()
-	
-	// No nibs, no coders - just manual instantiation
-	required init?(coder: NSCoder) {
-		fatalError("init(coder:) has not been implemented")
-	}
-	
-	override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
-		super.init(style: style, reuseIdentifier: reuseIdentifier)
+	// If a user taps a breed name, automatically enter it into search
+	func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+		tableView.deselectRow(at: indexPath, animated: false)
 		
-		contentView.addSubview(dogNameLabel)
-		
-		NSLayoutConstraint.activate([
-			dogNameLabel.topAnchor.constraint(equalTo: contentView.layoutMarginsGuide.topAnchor),
-			dogNameLabel.leadingAnchor.constraint(equalTo: contentView.layoutMarginsGuide.leadingAnchor),
-			dogNameLabel.bottomAnchor.constraint(equalTo: contentView.layoutMarginsGuide.bottomAnchor),
-			dogNameLabel.trailingAnchor.constraint(equalTo: contentView.layoutMarginsGuide.trailingAnchor),
-		])
+		let selectedName = currentResolvedImages.breedNameToUrlTuples[indexPath.row].breedName
+		inputField.text = selectedName
+		presenter?.userInputChanged(to: selectedName) 
 	}
 	
-	func configure(_ dogName: String) {
-		dogNameLabel.text = dogName
+	// Dismiss keyboard when scrolling around
+	func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
+		inputField.endEditing(true)
 	}
-	
-	
 }
-
-

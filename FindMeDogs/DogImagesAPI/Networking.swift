@@ -9,8 +9,8 @@
 import Foundation
 
 
-typealias DogBreedsListCallback = (DogBreedsList) -> Void
-typealias DogBreedImageListCallback = (DogBreedImages) -> Void
+typealias DogBreedsListCallback = (DogAPI_BreedsListResponse) -> Void
+typealias DogBreedImageListCallback = (DogAPI_DogBreedImagesResponse) -> Void
 typealias URLSessionCompletion = (Data?, URLResponse?, Error?) -> Void
 
 
@@ -36,7 +36,7 @@ class DogsApi {
 		with completion: @escaping DogBreedsListCallback
 	) {
 		fetch(Endpoint.allBreedsList.url(basePath)) { data, _, _ in
-			let dogBreedListModel = ModelCoding.shared.decode(data: data, asModel: DogBreedsList.self)
+			let dogBreedListModel = ModelCoding.shared.decode(data: data, asModel: DogAPI_BreedsListResponse.self)
 			completion(dogBreedListModel)
 		}
 	}
@@ -46,7 +46,7 @@ class DogsApi {
 		with completion: @escaping DogBreedImageListCallback
 	) {
 		fetch(Endpoint.imagesForBreed(breed).url(basePath)) { data, _, _ in
-			let dogImageListModel = ModelCoding.shared.decode(data: data, asModel: DogBreedImages.self)
+			let dogImageListModel = ModelCoding.shared.decode(data: data, asModel: DogAPI_DogBreedImagesResponse.self)
 			completion(dogImageListModel)
 		}
 	}
